@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "typescript": "^4.5.4"
+    "fs-extra": "^10.0.0",
+    "typescript": "3.9.9"
   }
 }

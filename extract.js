@@ -8,16 +8,6 @@ const calledFunctions = new Map();
 
 let currentFunction = undefined; // 正在哪个函数中
 
-function visitChildNode(node, visitCallback) {
-  if (!node) {
-    return;
-  }
-  node.forEachChild((child) => {
-    visitCallback && visitCallback(child);
-    visitChildNode(child);
-  });
-}
-
 function extractFunctionCalls(node, sourceFile) {
   // 函数声明如 `function hello()`
   if (ts.isFunctionDeclaration(node)) {
@@ -154,4 +144,6 @@ function genStack(name, callMap) {
 }
 
 console.log(processFilesResult);
+
+// 获取f3的调用栈
 console.log(genStack("f3", processFilesResult.calledChain));
