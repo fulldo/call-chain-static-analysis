@@ -134,8 +134,9 @@ class ExtractFunctionCalls {
 
   findCallChainWorker(identifierNode, filename, result) {
     const sourceFile = createSourceFile(filename);
-    let startPosition = identifierNode.getStart(sourceFile);
+    const startPosition = identifierNode.getStart(sourceFile);
 
+    // 找到代码定义实现的节点
     const implementation = findImplementation(filename, startPosition);
     if (implementation) {
       const implementationFilename = implementation.fileName;
@@ -147,7 +148,7 @@ class ExtractFunctionCalls {
       );
       if (implementationNode) {
         if (isDeclaration(implementationNode)) {
-          // 递归检查该AST node
+          // 递归检查该AST 所有的函数调用 node
           // console.log("递归检查该AST node");
           const allFunctionCallNodes = getFunctionCallInFunctionDeclare(
             implementationNode,
@@ -212,10 +213,12 @@ class ExtractFunctionCalls {
     for (let i = 0; i < rootDeclaredNodes.length; i++) {
       let nodeItem = rootDeclaredNodes[i];
       visitChildNode(nodeItem, (node) => {
+        // 非函数调用节点不处理
         if (!ts.isCallLikeExpression(node)) {
           return;
         }
         node.forEachChild((child) => {
+          // 找到不处理
           if (functionCallNode) {
             return;
           }
@@ -223,18 +226,18 @@ class ExtractFunctionCalls {
           if (ts.isIdentifier(child) || ts.isPropertyAccessExpression(child)) {
             const identifierNode = getIdentifierNode(child, sourceFile);
             const functionName = identifierNode.getText(sourceFile);
-
+            // 如果节点的名称是转入的函数，即找到了
             if (functionName === willFindFunctionName) {
               functionCallNode = child;
             }
           }
         });
-
+        // 找到后停止遍历
         if (functionCallNode) {
           return false;
         }
       });
-
+      // 找到后停止循环
       if (functionCallNode) {
         break;
       }
